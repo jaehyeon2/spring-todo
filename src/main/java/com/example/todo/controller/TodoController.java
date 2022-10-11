@@ -3,10 +3,11 @@ package com.example.todo.controller;
 
 import com.example.todo.entity.TodoEntity;
 import com.example.todo.repository.TodoRepository;
+import com.example.todo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Controller
 public class TodoController {
 
-    private final TodoRepository todoRepository;
+    private final TodoService todoService;
 
     @RequestMapping("/")
     public String home(){
@@ -23,8 +24,27 @@ public class TodoController {
 
     @RequestMapping("/todo")
     public String list(Model model){
-        List<TodoEntity> todoEntityList = this.todoRepository.findAll();
+        List<TodoEntity> todoEntityList = this.todoService.getList();
         model.addAttribute("todoEntityList", todoEntityList);
         return "todolist";
+    }
+
+    @DeleteMapping("/todo/delete/{id}")
+    public String todoDelete(@PathVariable Integer id){
+        this.todoService.delete(id);
+        return "redirect:/todo";
+    }
+
+    @PostMapping("/todo/create")
+    public String todoCreate(@RequestParam String content){
+        this.todoService.create(content);
+
+        return "redirect:/todo";
+    }
+
+    @PutMapping("/todo/update/{id}")
+    public String todoUpdate(@RequestBody String content, @PathVariable Integer id){
+        this.todoService.update(id, content);
+        return "redurect:/todo";
     }
 }
